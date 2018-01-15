@@ -1,12 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import sys,os,pyfits,math
 import numpy as np
 import ezgal
 
 if len( sys.argv ) < 3:
-	print '\nconvert pegase2 sps models to EzGal fits format'
-	print 'Usage: convert_pegase2.py pegase.fits output.model\n'
+	print('\nconvert pegase2 sps models to EzGal fits format')
+	print('Usage: convert_pegase2.py pegase.fits output.model\n')
 	sys.exit(2)
 
 filein = sys.argv[1]

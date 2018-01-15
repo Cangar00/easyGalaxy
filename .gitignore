@@ -1,3 +1,5 @@
 *~
 *.pyc
 ezgal/data/models
+ezgal.egg-info
+ezgal/__pycache__

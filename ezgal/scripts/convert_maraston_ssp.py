@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import sys,os,math,pyfits
 import numpy as np
@@ -6,8 +6,8 @@ import utils
 import scipy.interpolate as interpolate
 
 if len( sys.argv ) < 3:
-	print '\nconvert maraston ssp models to ez_galaxy ascii format'
-	print 'Usage: convert_maraston_ssp.py ssp_model.in ssp_model.out\n'
+	print('\nconvert maraston ssp models to ez_galaxy ascii format')
+	print('Usage: convert_maraston_ssp.py ssp_model.in ssp_model.out\n')
 	sys.exit(2)
 
 # was a file passed for the masses?

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
@@ -1643,7 +1643,7 @@ class ezgal(object):
         if type( file ) == type( '' ):
             file = self._find_filter_file( file )
 
-        self.filters[name] = astro_filter.astro_filter( file, units=units, cosmology=self.cosmo, vega=self.vega, solar=self.solar )
+        self.filters[name] = astro_filter( file, units=units, cosmology=self.cosmo, vega=self.vega, solar=self.solar )
         self.filters[name].tol = self.tol
         # store its name in self.filter_order
         if not self.filter_order.count( name ): self.filter_order.append( name )

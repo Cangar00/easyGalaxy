@@ -6,15 +6,14 @@ import numpy as np
 import ezgal
 import scipy.interpolate as interpolate
 
-if len( sys.argv ) < 5:
-	print('\nconvert bruzual and charlot sps models to ez_galaxy fits format')
-	print('Usage: convert_bruzual.py model.ised remants_file.3color mass_file.4color model.fits\n')
-	sys.exit(2)
+if len( sys.argv ) < 4:
+        print('\nconvert bruzual and charlot sps models to ez_galaxy fits format')
+        print('Usage: convert_bruzual.py model.ised mass_file.4color model.fits\n')
+        sys.exit(2)
 
 filein = sys.argv[1]
-fileremnants = sys.argv[2]
-filemass = sys.argv[3]
-fileout = sys.argv[4]
+filemass = sys.argv[2]
+fileout = sys.argv[3]
 
 # try to extract meta data out of fileout
 model = ''; sfh = ''; tau = ''; met = ''; imf = ''
@@ -22,26 +21,26 @@ model = ''; sfh = ''; tau = ''; met = ''; imf = ''
 parts = '.'.join( fileout.split( '.' )[:-1] ).split( '_' )
 # look for model set
 for (check,val) in zip( ['bc03','cb07'], ['BC03','CB07'] ):
-	if parts.count( check ):
-		model = val
-		break
+        if parts.count( check ):
+                model = val
+                break
 # look for sfh
 for (check,val) in zip( ['ssp','exp','burst'], ['SSP','Exponential','Burst'] ):
-	if parts.count( check ):
-		sfh = val
-		sfh_index = parts.index( check )
-		break
+        if parts.count( check ):
+                sfh = val
+                sfh_index = parts.index( check )
+                break
 # tau?
 if sfh:
-	tau = parts[sfh_index+1] if sfh != 'SSP' else ''
+        tau = parts[sfh_index+1] if sfh != 'SSP' else ''
 # metallicity
 if parts.count( 'z' ):
-	met = parts[ parts.index( 'z' ) + 1 ]
+        met = parts[ parts.index( 'z' ) + 1 ]
 # imf
 for (check,val) in zip( ['krou','salp','chab'], ['Kroupa', 'Salpeter', 'Chabrier'] ):
-	if parts.count( check ):
-		imf = val
-		break
+        if parts.count( check ):
+                imf = val
+                break
 
 if not os.path.isfile( filein ): raise ValueError( 'Input file does not exist or is not readable!' )
 if not os.path.isfile( filemass ): raise ValueError( 'Mass file does not exist or is not readable!' )
@@ -54,24 +53,13 @@ mass = ezgal.utils.rascii( filemass, silent=True )
 # each line in the mass file should exactly correspond to the age, with the exception of the first age (which is zero)
 # check that the numbers of lines are the same, and if so assume that the correspondence is perfect.
 # otherwise, interpolate
+# use M*_tot = M*_liv + M*_remnant, consistent with convert_bruzual.py
 if mass[:,0].size == ages.size-1:
-	masses = np.append( 0, mass[:,6] )
+        masses = np.append( 0, mass[:,10] )
 else:
-	masses = np.zeros( ages.size )
-	interp = interpolate.interp1d( 10.0**mass[:,0], mass[:,6] )
-	masses[1:] = interp( ages[1:] )
-
-# ditto but now for the remnants
-remnants = ezgal.utils.rascii( fileremnants, silent=True )
-if remnants[:,0].size == ages.size-1:
-	remnants = np.append( 0, remnants[:,11] )
-else:
-	remnants = np.zeros( ages.size )
-	interp = interpolate.interp1d( 10.0**mass[:,0], mass[:,11] )
-	remnants[1:] = interp( ages[1:] )
-
-# add remnants to stellar mass
-masses += remnants
+        masses = np.zeros( ages.size )
+        interp = interpolate.interp1d( 10.0**mass[:,0], mass[:,10], fill_value='extrapolate' )
+        masses[1:] = interp( ages[1:] )
 
 # generate fits frame with sed in it
 primary_hdu = fits.PrimaryHDU(seds)
@@ -100,4 +88,3 @@ ages_hdu.header['has_mass'] = True
 hdulist = fits.HDUList( [primary_hdu,vs_hdu,ages_hdu] )
 # and write it out
 hdulist.writeto( fileout, overwrite=True )
-

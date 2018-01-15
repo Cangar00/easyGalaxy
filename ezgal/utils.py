@@ -401,9 +401,9 @@ def read_ised( file ):
 	junk = _read_binary( fh, type='f', number=3 )
 	junk = _read_binary( fh )
 	junk = _read_binary( fh, type='f' )
-	junk = _read_binary( fh, type='c', number=80 )
+	junk = _read_binary( fh, type='b', number=80 )
 	junk = _read_binary( fh, type='f', number=4 )
-	junk = _read_binary( fh, type='c', number=160 )
+	junk = _read_binary( fh, type='b', number=160 )
 	junk = _read_binary( fh )
 	junk = _read_binary( fh, number=3 )
 
@@ -411,7 +411,7 @@ def read_ised( file ):
 	nvs = _read_binary( fh )
 
 	# consistency check
-	if nvs < 10 or nvs > 12000: raise ValueError( 'Problem reading ised file - unexpected data found for the number of wavelengths!' )
+	if nvs < 10 or nvs > 20000: raise ValueError( 'Problem reading ised file - unexpected data found for the number of wavelengths!' )
 
 	# read wavelengths and convert to frequency (comes in as Angstroms)
 	# also reverse the array so it will be sorted after converting to frequency
@@ -431,7 +431,7 @@ def read_ised( file ):
 		junk = _read_binary( fh, type='f', number=nx )
 
 	# now convert the seds from Lo/A to ergs/s/Hz
-	seds *= 3.826e33*ls.reshape( (nvs,1) )**2.0/convert_length( c, outgoing='a' )
+	seds *= ls.reshape( (nvs,1) )**2.0/convert_length( c, outgoing='a' ) * 3.826e33
 	# convert from ergs/s/Hz to ergs/s/Hz/cm^2.0 @ 10pc
 	seds /= 4.0*np.pi*convert_length( 10, incoming='pc', outgoing='cm' )**2.0
 	vs = to_hertz( ls )
@@ -441,4 +441,4 @@ def read_ised( file ):
 	# sort in frequency space
 	sinds = vs.argsort()
 
-	return ( seds[sinds,:], ages, vs[sinds,:] )
+	return ( seds[sinds,:], ages, vs[sinds] )

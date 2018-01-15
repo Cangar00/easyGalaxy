@@ -1,13 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import glob,re,sys,math,pyfits
 import numpy as np
 import utils
 
 if len( sys.argv ) < 2:
-	print '\nconvert basti SSP models to ez_gal fits format'
-	print 'Run in directory with SED models for one metallicity'
-	print 'Usage: convert_basti.py ez_gal.ascii\n'
+	print('\nconvert basti SSP models to ez_gal fits format')
+	print('Run in directory with SED models for one metallicity')
+	print('Usage: convert_basti.py ez_gal.ascii\n')
 	sys.exit(2)
 
 fileout = sys.argv[1]
@@ -43,7 +43,7 @@ has_masses = False
 mass_file = glob.glob( 'MLR*.txt' )
 if len( mass_file ):
 	# read it in!
-	print 'Loading masses from %s' % mass_file[0]
+	print(('Loading masses from %s' % mass_file[0]))
 	data = utils.rascii( mass_file[0], silent=True )
 	masses = data[:,10:14].sum( axis=1 )
 	has_masses = True

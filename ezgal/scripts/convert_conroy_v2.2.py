@@ -1,12 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import sys,os,pyfits,math
 import numpy as np
 from ezgal import utils
 
 if len( sys.argv ) < 4:
-	print '\nconvert conroy sps models to ez_galaxy fits format'
-	print 'Usage: convert_conroy.py csp_model.out.spec model.lamba csp_model.out\n'
+	print('\nconvert conroy sps models to ez_galaxy fits format')
+	print('Usage: convert_conroy.py csp_model.out.spec model.lamba csp_model.out\n')
 	sys.exit(2)
 
 filein = sys.argv[1]
