@@ -85,3 +85,52 @@ def exponential_truncation(t, tau, t_cut, tau_cut):
             sfr = sfr * np.exp((t_cut - t)/tau_cut)
     return sfr
 
+def chen12(t, t_form, tau, t_cut=None, tau_cut=None,
+        t_burst=[], l_burst=[], a_burst=[]):
+    """ (modified_ages, sfr) = ezgal.sfhs.exponential_truncation(ages, tau, age_cut=None, tau_cut=None, age_burst=[], length_burst=[], amplitude_burst=[])
+
+    Exponentially decaying star formation with potential truncation, superposed by multiple short bursts (Chen et al. 2012). http://adsabs.harvard.edu/abs/2012MNRAS.421..314C
+
+    .. note::
+        This function is different from other sfh functions. It will provide a modified age grid to overcome the poor sampling problem for short star bursts.
+    """
+
+    flag_cut = False if t_cut is None or tau_cut is None or t_cut < t_form else True
+    n_burst = len(t_burst)
+    # best time resolution (usually the age grid is denser for young age)
+    if len(t) > 1:
+        t[1:] - t[0:-1]
+    t_res = np.min(t) / 10
+
+    def continuum(x):
+        if flag_cut:
+            return exponential_truncation(x-t_form, tau, t_cut-t_form, tau_cut)
+        else:
+            return exponential(t-t_form, tau)
+
+    # if type(t) != np.ndarray:
+        # if t < t_form:
+            # sfr = 0.0
+        # else:
+            # sfr = continuum(t)
+        # for i in range(n_burst):
+            # if t >= t_burst[i] and t < t_burst[i]+l_burst[i]:
+                # sfr += a_burst[i]
+        # return (t, sfr)
+
+    sfr = continuum(t)
+    t += t_form
+    t.append(t_form-t_res)
+    sfr.append(0.0)
+    for i in range(n_burst):
+        t_s = t_burst[i]
+        t_e = t_burst[i] + l_burst[i]
+        t_add = [t_s-t_res, t_s+t_res, t_e-t_res, t_e+t_res]
+        np.append(t, t_add)
+        np.append(sfr, continuum(t_add))
+        sfr[(t >= t_s)*(t < t_e)] += a_burst[i]
+
+
+
+
+    return (t, sfr)
